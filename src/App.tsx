@@ -14,6 +14,7 @@ import { CategoryDetails } from "./pages/CategoryDetails";
 import { Offers } from "./pages/Offers";
 import { CreateOffer } from "./pages/CreateOffer";
 import { OfferDetails } from "./pages/OfferDetails";
+import { Clients } from "./pages/Clients";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/offers" element={<Offers />} />
             <Route path="/offers/create" element={<CreateOffer />} />
             <Route path="/offers/details" element={<OfferDetails />} />
+            <Route path="/clients" element={<Clients />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

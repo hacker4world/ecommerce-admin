@@ -27,6 +27,7 @@ import {
   Plus,
   RotateCcw,
   Search,
+  Settings,
   Tag,
   Trash2,
   Users,
@@ -430,7 +431,10 @@ export function Offers() {
                   </div>
                 </th>
                 <th className="h-12 px-6 align-middle font-medium text-muted-foreground">
-                  <span>Actions</span>
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4 text-primary/70" />
+                    <span className="tracking-wider">Actions</span>
+                  </div>
                 </th>
               </tr>
             </thead>
