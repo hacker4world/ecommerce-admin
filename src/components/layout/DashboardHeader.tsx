@@ -10,6 +10,9 @@ import {
   TriangleAlert,
   PackageMinus,
   PackageX,
+  Truck,
+  Percent,
+  PercentCircleIcon,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -94,7 +97,15 @@ export function DashboardHeader() {
             onValueChange={setActiveTab}
             className="w-full"
           >
-            <TabsList className="grid w-full grid-cols-4 h-14 rounded-none border-b border-border bg-transparent p-0">
+            <TabsList className="grid w-full grid-cols-3 h-14 rounded-none border-b border-border bg-transparent p-0">
+              <TabsTrigger
+                value="products"
+                className="flex items-center gap-2 text-xs font-medium text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:bg-blue-50/50 dark:data-[state=active]:bg-blue-950/20 transition-all hover:text-foreground"
+              >
+                <User className="h-4 w-4" />
+                Produits
+              </TabsTrigger>
+
               <TabsTrigger
                 value="clients"
                 className="flex items-center gap-2 text-xs font-medium text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:bg-blue-50/50 dark:data-[state=active]:bg-blue-950/20 transition-all hover:text-foreground"
@@ -107,25 +118,11 @@ export function DashboardHeader() {
                 value="vehicules"
                 className="flex items-center gap-2 text-xs font-medium text-muted-foreground data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 data-[state=active]:bg-emerald-50/50 dark:data-[state=active]:bg-emerald-950/20 transition-all hover:text-foreground"
               >
-                <Car className="h-4 w-4" />
-                Véhicules
+                <Truck className="h-4 w-4" />
+                Livreurs
               </TabsTrigger>
 
-              <TabsTrigger
-                value="locations"
-                className="flex items-center gap-2 text-xs font-medium text-muted-foreground data-[state=active]:text-orange-600 dark:data-[state=active]:text-orange-400 data-[state=active]:bg-orange-50/50 dark:data-[state=active]:bg-orange-950/20 transition-all hover:text-foreground"
-              >
-                <MapPin className="h-4 w-4" />
-                Locations
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="reservations"
-                className="flex items-center gap-2 text-xs font-medium text-muted-foreground data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:bg-purple-50/50 dark:data-[state=active]:bg-purple-950/20 transition-all hover:text-foreground"
-              >
-                <Calendar className="h-4 w-4" />
-                Réservations
-              </TabsTrigger>
+              
             </TabsList>
 
             <div className="p-4">
@@ -224,8 +221,8 @@ export function DashboardHeader() {
                   value="demandes"
                   className="flex flex-col items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:bg-blue-50/50 dark:data-[state=active]:bg-blue-950/20 transition-all hover:text-foreground border-b-2 border-transparent data-[state=active]:border-blue-600"
                 >
-                  <Layers className="h-4.5 w-4.5" />
-                  <span>Demandes articles</span>
+                  <Truck className="h-4.5 w-4.5" />
+                  <span>Livraisons</span>
                 </TabsTrigger>
 
                 <TabsTrigger
@@ -233,23 +230,23 @@ export function DashboardHeader() {
                   className="flex flex-col items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 data-[state=active]:bg-blue-50/50 dark:data-[state=active]:bg-blue-950/20 transition-all hover:text-foreground border-b-2 border-transparent data-[state=active]:border-blue-600"
                 >
                   <TriangleAlert className="h-4.5 w-4.5" />
-                  <span>Retours articles</span>
+                  <span>Alertes stock</span>
                 </TabsTrigger>
 
                 <TabsTrigger
                   value="maintenance"
                   className="flex flex-col items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground data-[state=active]:text-orange-600 dark:data-[state=active]:text-orange-400 data-[state=active]:bg-orange-50/50 dark:data-[state=active]:bg-orange-950/20 transition-all hover:text-foreground border-b-2 border-transparent data-[state=active]:border-orange-600"
                 >
-                  <PackageMinus className="h-4.5 w-4.5" />
-                  <span>Produits presque épuisées</span>
+                  <Percent className="h-4.5 w-4.5" />
+                  <span>Début solde</span>
                 </TabsTrigger>
 
                 <TabsTrigger
                   value="visite"
                   className="flex flex-col items-center justify-center gap-1.5 text-[11px] font-medium text-muted-foreground data-[state=active]:text-purple-600 dark:data-[state=active]:text-purple-400 data-[state=active]:bg-purple-50/50 dark:data-[state=active]:bg-purple-950/20 transition-all hover:text-foreground border-b-2 border-transparent data-[state=active]:border-purple-600"
                 >
-                  <PackageX className="h-4.5 w-4.5" />
-                  <span>Produits épuisées</span>
+                  <PercentCircleIcon className="h-4.5 w-4.5" />
+                  <span>Fin solde</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -275,11 +272,6 @@ export function DashboardHeader() {
             </Tabs>
           </PopoverContent>
         </Popover>
-        <div className="h-8 w-px bg-border mx-2" />
-        <div className="text-right hidden sm:block">
-          <p className="text-sm font-medium text-foreground">Welcome back</p>
-          <p className="text-xs text-muted-foreground">{currentDate}</p>
-        </div>
       </div>
     </header>
   );

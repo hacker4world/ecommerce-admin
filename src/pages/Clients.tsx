@@ -167,7 +167,7 @@ export function Clients() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      onClick={() => navigate(`/clients/${client.id}`)}
+                      onClick={() => navigate(`/clients/details`)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>

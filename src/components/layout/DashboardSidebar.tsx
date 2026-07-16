@@ -1,52 +1,26 @@
 import {
-  Wrench,
   Bell,
-  LayoutDashboard,
+  Calendar,
   ChevronLeft,
   ChevronRight,
-  ClipboardCheck,
-  CalendarSync,
   CircleUser,
-  Box,
-  Warehouse,
-  Truck,
-  HardHat,
-  Factory,
-  Bolt,
-  Power,
-  FileSpreadsheet,
-  Package,
-  Filter,
-  Layers,
-  TriangleAlert,
-  ListChecks,
-  ListRestart,
-  PackageCheck,
-  PackageX,
-  Calendar,
-  Lock,
-  List,
-  User,
-  Package2,
-  Cog,
-  ShoppingBag,
-  FolderOpen,
-  Percent,
-  Users,
-  UserPlus,
   Clock,
   CheckCircle,
   XCircle,
-  Wallet,
+  FolderOpen,
+  LayoutDashboard,
+  Package,
+  Percent,
   Settings,
+  ShoppingBag,
+  Truck,
+  Users,
+  UserPlus,
+  Wallet,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import logo from "@/assets/logo.jfif";
-import { title } from "process";
-import { url } from "inspector";
-
 
 const navigationItems = [
   { title: "Tableau de bord", url: "/", icon: LayoutDashboard },
@@ -54,80 +28,36 @@ const navigationItems = [
     title: "Gestion des produits",
     icon: Package,
     children: [
-      {
-        title: "Liste des produits",
-        icon: ShoppingBag,
-        url: "/products",
-      },
-      {
-        title: "Liste des catégories",
-        icon: FolderOpen,
-        url: "/categories",
-      },
-      {
-        title: "Offres et Remises",
-        icon: Percent,
-        url: "/offers",
-      },
+      { title: "Liste des produits", icon: ShoppingBag, url: "/products" },
+      { title: "Liste des catégories", icon: FolderOpen, url: "/categories" },
+      { title: "Offres et Remises", icon: Percent, url: "/offers" },
     ],
   },
   {
     title: "Gestion des comptes",
     icon: Users,
     children: [
-      {
-        title: "Comptes clients",
-        icon: UserPlus,
-        url: "/clients",
-      },
-      {
-        title: "Comptes livreurs",
-        icon: Truck,
-        url: "/livreurs",
-      },
+      { title: "Comptes clients", icon: UserPlus, url: "/clients" },
+      { title: "Comptes livreurs", icon: Truck, url: "/livreurs" },
     ],
   },
   {
     title: "Commandes",
-    icon: Box,
+    icon: ShoppingBag,
     children: [
-      {
-        title: "Commandes en attente",
-        icon: Clock,
-        url: "/imports/pending",
-      },
+      { title: "Commandes en attente", icon: Clock, url: "/orders/pending" },
       {
         title: "Commandes délivrées",
         icon: CheckCircle,
-        url: "/imports/confirmed",
+        url: "/orders/confirmed",
       },
-      {
-        title: "Commandes annulées",
-        icon: XCircle,
-        url: "/imports/canceled",
-      },
+      { title: "Commandes annulées", icon: XCircle, url: "/orders/canceled" },
     ],
   },
-  {
-    title: "Gestion finances",
-    url: "/finances",
-    icon: Wallet,
-  },
-  {
-    title: "Calendrier globale",
-    url: "/calendar",
-    icon: Calendar,
-  },
-  {
-    title: "Notifications",
-    url: "/notifications",
-    icon: Bell,
-  },
-  {
-    title: "Paramètres magasin",
-    url: "/settings",
-    icon: Settings,
-  },
+  { title: "Gestion finances", url: "/finances", icon: Wallet },
+  { title: "Calendrier globale", url: "/calendar", icon: Calendar },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Paramètres magasin", url: "/settings", icon: Settings },
 ];
 
 export function DashboardSidebar() {
@@ -154,44 +84,33 @@ export function DashboardSidebar() {
   };
 
   return (
-    // Added "flex flex-col" here
     <aside
       className={cn(
         "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out",
-        collapsed ? "w-25" : "w-72",
+        collapsed ? "w-[80px]" : "w-72",
       )}
     >
-      {/* Logo - Added flex-shrink-0 to prevent it from shrinking */}
+      {/* Logo */}
       <div className="flex h-20 flex-shrink-0 items-center justify-between border-b border-sidebar-border px-6">
-        {!collapsed && (
-          <div className="flex items-center gap-3 animate-fade-in">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary overflow-hidden">
-              <Package />
-            </div>
-            <div>
-              <h1 className="text-lg font-semibold text-foreground">
-                SmartStock
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Stock management solution
-              </p>
-            </div>
+        {collapsed ? (
+          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+            <ShoppingBag className="h-5 w-5 text-primary-foreground" />
           </div>
-        )}
-        {collapsed && (
-          <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg bg-primary overflow-hidden">
-            <img
-              src={logo}
-              alt="AutoRent Logo"
-              className="h-full w-full object-cover"
-            />
+        ) : (
+          <div className="flex items-center gap-3 animate-fade-in">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+              <ShoppingBag className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <h1 className="text-lg font-semibold text-foreground">
+              Marketplace
+            </h1>
           </div>
         )}
       </div>
 
-      {/* Navigation - Added flex-1 overflow-y-auto here to make it scrollable */}
+      {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
-        {navigationItems.map((item, index) => {
+        {navigationItems.map((item) => {
           const isChildActive = item.children?.some(
             (child) => location.pathname === child.url,
           );
@@ -289,7 +208,22 @@ export function DashboardSidebar() {
         })}
       </nav>
 
-      {/* Collapse Button */}
+      {/* User Footer */}
+      {!collapsed && (
+        <div className="flex-shrink-0 border-t border-sidebar-border p-4">
+          <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+              <CircleUser className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <div className="flex-1 truncate">
+              <p className="text-sm font-medium text-foreground">Admin</p>
+              <p className="text-xs text-muted-foreground">Administrateur</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Collapse Toggle */}
       <button
         onClick={() => setCollapsed(!collapsed)}
         className="absolute -right-3 top-24 flex h-6 w-6 items-center justify-center rounded-full border border-sidebar-border bg-sidebar text-muted-foreground shadow-lg transition-colors hover:bg-sidebar-accent hover:text-foreground"
@@ -300,21 +234,6 @@ export function DashboardSidebar() {
           <ChevronLeft className="h-4 w-4" />
         )}
       </button>
-
-      {/* Footer - Removed absolute positioning, added flex-shrink-0 and mt-auto to stick to bottom safely */}
-      {!collapsed && (
-        <div className="flex-shrink-0 border-t border-sidebar-border p-4">
-          <div className="flex items-center gap-3 rounded-lg bg-secondary/50 p-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <span className="text-sm font-medium text-foreground">TT</span>
-            </div>
-            <div className="flex-1 truncate">
-              <p className="text-sm font-medium text-foreground">Testing</p>
-              <p className="text-xs text-muted-foreground">Testing</p>
-            </div>
-          </div>
-        </div>
-      )}
     </aside>
   );
 }

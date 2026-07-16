@@ -15,6 +15,12 @@ import { Offers } from "./pages/Offers";
 import { CreateOffer } from "./pages/CreateOffer";
 import { OfferDetails } from "./pages/OfferDetails";
 import { Clients } from "./pages/Clients";
+import { ClientAnalytics } from "./pages/ClientDetails";
+import { Workers } from "./pages/Livreurs";
+import { CreateWorker } from "./pages/CreateDeliveryWorker";
+import { WorkerAnalytics } from "./pages/WorkerDetails";
+import { GlobalCalendar } from "./pages/Calendar";
+import { Notifications } from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +43,12 @@ const App = () => (
             <Route path="/offers/create" element={<CreateOffer />} />
             <Route path="/offers/details" element={<OfferDetails />} />
             <Route path="/clients" element={<Clients />} />
+            <Route path="/clients/details" element={<ClientAnalytics />} />
+            <Route path="/livreurs" element={<Workers />} />
+            <Route path="/livreurs/add" element={<CreateWorker />} />
+            <Route path="/livreurs/details" element={<WorkerAnalytics />} />
+            <Route path="/calendar" element={<GlobalCalendar />} />
+            <Route path="/notifications" element={<Notifications />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
