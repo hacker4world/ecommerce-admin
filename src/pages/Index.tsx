@@ -1,609 +1,495 @@
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
-import React, { useState } from "react";
-import { StatCard } from "@/components/dashboard/StatCard";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  format,
+  isToday,
+  startOfMonth,
+  subMonths,
+} from "date-fns";
 import {
-  Calendar,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  DollarSign,
   Package,
+  ShoppingCart,
+  TrendingUp,
   Truck,
-  ArrowUpDown,
-  ArrowUpRight,
-  ArrowDownRight,
-  User,
-  LogIn,
-  UserPlus,
-  Settings,
-  Clock,
 } from "lucide-react";
+import { useMemo, useState } from "react";
 
-export const Index = () => {
-  // ── Mock Data ────────────────────────────────────
-  const upcomingEvents = [
-    {
-      id: 1,
-      title: "Livraison chantier #42",
-      date: "2026-07-02",
-      type: "delivery",
-      description: "Réception de 120 sacs de ciment",
-    },
-    {
-      id: 2,
-      title: "Inventaire mensuel",
-      date: "2026-07-05",
-      type: "inventory",
-      description: "Comptage physique Entrepôt A",
-    },
-    {
-      id: 3,
-      title: "Expédition externe #88",
-      date: "2026-07-08",
-      type: "export",
-      description: "Livraison client Jean Dupont",
-    },
-  ];
+// ---------- Mock data ----------
+const MOCK_SUMMARY = {
+  recentDeliveries: 12,
+  recentMoney: "3 450 TND",
+  totalProducts: 45,
+};
 
-  const recentImports = [
-    {
-      id: 1432,
-      date: "2026-06-24",
-      supplier: "Ciments du Sud",
-      items: 45,
-      status: "completed",
-      confirmed: true,
-    },
-    {
-      id: 1431,
-      date: "2026-06-23",
-      supplier: "Aciérie Moderne",
-      items: 12,
-      status: "pending",
-      confirmed: false,
-    },
-    {
-      id: 1430,
-      date: "2026-06-22",
-      supplier: "Quincaillerie Express",
-      items: 230,
-      status: "completed",
-      confirmed: true,
-    },
-    {
-      id: 1429,
-      date: "2026-06-21",
-      supplier: "Peintures Pro",
-      items: 50,
-      status: "pending",
-      confirmed: false,
-    },
-  ];
+const RECENT_DELIVERIES = [
+  {
+    id: "CMD-105",
+    customer: "Ahmed Ben Salah",
+    date: "2026-07-07",
+    status: "En cours",
+    amount: "320 TND",
+  },
+  {
+    id: "CMD-106",
+    customer: "Sarra Mansour",
+    date: "2026-07-07",
+    status: "En cours",
+    amount: "145 TND",
+  },
+  {
+    id: "CMD-104",
+    customer: "Fatima Zahra",
+    date: "2026-07-06",
+    status: "Livré",
+    amount: "210 TND",
+  },
+  {
+    id: "CMD-103",
+    customer: "Mohamed Ali",
+    date: "2026-07-05",
+    status: "Livré",
+    amount: "89 TND",
+  },
+];
 
-  const recentExports = [
-    {
-      id: 5621,
-      date: "2026-06-25",
-      destination: "Chantier A",
-      items: 8,
-      type: "to-construction-site",
-      confirmed: true,
-    },
-    {
-      id: 5620,
-      date: "2026-06-24",
-      destination: "Client externe B",
-      items: 3,
-      type: "external",
-      confirmed: false,
-    },
-    {
-      id: 5619,
-      date: "2026-06-23",
-      destination: "Dépôt central",
-      items: 15,
-      type: "to-warehouse",
-      confirmed: true,
-    },
-    {
-      id: 5618,
-      date: "2026-06-22",
-      destination: "Chantier C",
-      items: 20,
-      type: "to-construction-site",
-      confirmed: false,
-    },
-  ];
+const UPCOMING_SALES = [
+  {
+    name: "Soldes d'été – 20% sur les casques",
+    discount: "-20%",
+    start: "2026-07-01",
+    end: "2026-07-31",
+  },
+  {
+    name: "Promo accessoires 10%",
+    discount: "-10%",
+    start: "2026-08-01",
+    end: "2026-08-31",
+  },
+];
 
-  const recentStockChanges = [
-    {
-      product: "Ciment Portland",
-      previousQty: 45,
-      newQty: 120,
-      change: 75,
-      reason: "Réception import #1432",
-    },
-    {
-      product: "Barres d'acier Ø12",
-      previousQty: 8,
-      newQty: 3,
-      change: -5,
-      reason: "Sortie chantier #5621",
-    },
-    {
-      product: "Boulons M10",
-      previousQty: 300,
-      newQty: 150,
-      change: -150,
-      reason: "Transfert dépôt",
-    },
-    {
-      product: "Sable fin",
-      previousQty: 10,
-      newQty: 20,
-      change: 10,
-      reason: "Réception import #1430",
-    },
-  ];
+// Daily deliveries (last 7 days)
+const DELIVERY_TREND = {
+  days: ["01/07", "02/07", "03/07", "04/07", "05/07", "06/07", "07/07"],
+  counts: [8, 12, 10, 15, 11, 9, 14],
+};
 
-  const recentAccountActivities = [
-    {
-      id: 1,
-      action: "Connexion",
-      user: "admin@example.com",
-      timestamp: "2026-06-25 14:32",
-      icon: LogIn,
-      color: "text-blue-500",
-    },
-    {
-      id: 2,
-      action: "Création d'un compte",
-      user: "jean.dupont@chantier.fr",
-      timestamp: "2026-06-25 11:15",
-      icon: UserPlus,
-      color: "text-emerald-500",
-    },
-    {
-      id: 3,
-      action: "Modification du profil",
-      user: "marie.martin@depot.com",
-      timestamp: "2026-06-24 16:45",
-      icon: Settings,
-      color: "text-amber-500",
-    },
-    {
-      id: 4,
-      action: "Connexion",
-      user: "logistique@entreprise.dz",
-      timestamp: "2026-06-24 09:20",
-      icon: LogIn,
-      color: "text-blue-500",
-    },
-  ];
+// Today's events
+const TODAY_EVENTS = [
+  { id: "e1", title: "Livraison CMD-105", time: "09:00", type: "delivery" },
+  { id: "e2", title: "Livraison CMD-106", time: "11:00", type: "delivery" },
+  { id: "e3", title: "Fin promo accessoires", time: "23:59", type: "sale_end" },
+];
 
-  // ── Helpers ──────────────────────────────────────
-  const formatDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("fr-FR", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-    });
-  };
-
-  const getEventIcon = (type: string) => {
-    switch (type) {
-      case "delivery":
-        return <Truck className="h-4 w-4 text-blue-500" />;
-      case "inventory":
-        return <Package className="h-4 w-4 text-amber-500" />;
-      case "export":
-        return <ArrowUpRight className="h-4 w-4 text-emerald-500" />;
-      default:
-        return <Calendar className="h-4 w-4" />;
-    }
-  };
+// ---------- Line Chart Component ----------
+const DeliveriesLineChart = ({
+  data,
+  days,
+}: {
+  data: number[];
+  days: string[];
+}) => {
+  const width = 500,
+    height = 200;
+  const pad = { top: 20, right: 20, bottom: 30, left: 35 };
+  const max = Math.max(...data);
+  const points = data.map((d, i) => {
+    const x =
+      pad.left + (i / (data.length - 1)) * (width - pad.left - pad.right);
+    const y = height - pad.bottom - (d / max) * (height - pad.top - pad.bottom);
+    return { x, y, day: days[i], value: d };
+  });
+  const pathD = points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x},${p.y}`)
+    .join(" ");
 
   return (
-    <DashboardLayout>
-      {/* Page Header */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Tableau de bord
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Vue globale d'activités récentes
+    <svg
+      viewBox={`0 0 ${width} ${height}`}
+      className="w-full h-auto"
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {[0, 0.25, 0.5, 0.75, 1].map((ratio) => {
+        const y = height - pad.bottom - ratio * (height - pad.top - pad.bottom);
+        return (
+          <g key={ratio}>
+            <line
+              x1={pad.left}
+              y1={y}
+              x2={width - pad.right}
+              y2={y}
+              stroke="currentColor"
+              className="text-muted-foreground/20"
+              strokeWidth="1"
+            />
+            <text
+              x={pad.left - 8}
+              y={y + 3}
+              textAnchor="end"
+              className="text-[9px] fill-muted-foreground"
+            >
+              {Math.round(max * ratio)}
+            </text>
+          </g>
+        );
+      })}
+      <path
+        d={pathD}
+        fill="none"
+        stroke="currentColor"
+        className="text-primary"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {points.map((p, i) => (
+        <g key={i}>
+          <circle
+            cx={p.x}
+            cy={p.y}
+            r="3"
+            className="fill-primary stroke-background"
+            strokeWidth="1.5"
+          />
+          <text
+            x={p.x}
+            y={height - 5}
+            textAnchor="middle"
+            className="text-[9px] fill-muted-foreground"
+          >
+            {p.day}
+          </text>
+          {i % 2 === 0 && (
+            <text
+              x={p.x}
+              y={p.y - 8}
+              textAnchor="middle"
+              className="text-[9px] fill-foreground font-medium"
+            >
+              {p.value}
+            </text>
+          )}
+        </g>
+      ))}
+    </svg>
+  );
+};
+
+// ---------- Small Calendar Component (similar to previous product calendar) ----------
+const MiniCalendar = () => {
+  const [currentDate, setCurrentDate] = useState(new Date(2026, 6, 7)); // July 2026
+  const todayEvents = TODAY_EVENTS; // we can show events for the selected date? For simplicity, just highlight today.
+
+  const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
+  const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
+
+  const calendarDays = useMemo(() => {
+    const first = startOfMonth(currentDate);
+    const last = endOfMonth(currentDate);
+    const days = eachDayOfInterval({ start: first, end: last });
+    const startDow = first.getDay();
+    const padding = startDow === 0 ? 6 : startDow - 1;
+    const padded = Array.from({ length: padding }).map((_, i) => {
+      const d = new Date(first);
+      d.setDate(d.getDate() - (padding - i));
+      return { date: d, isCurrentMonth: false };
+    });
+    return [...padded, ...days.map((d) => ({ date: d, isCurrentMonth: true }))];
+  }, [currentDate]);
+
+  const weekDays = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+  return (
+    <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-5">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base font-semibold text-foreground flex items-center gap-2">
+          <CalendarDays className="h-5 w-5 text-muted-foreground" />
+          Aujourd'hui
+        </h2>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handlePrevMonth}
+            className="h-7 w-7"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <span className="text-sm font-medium capitalize">
+            {format(currentDate, "MMM yyyy")}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleNextMonth}
+            className="h-7 w-7"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      {/* Mini calendar grid */}
+      <div className="overflow-hidden rounded-lg border border-border/50">
+        <div className="grid grid-cols-7 border-b border-border bg-muted/30">
+          {weekDays.map((day) => (
+            <div
+              key={day}
+              className="py-1 text-center text-[10px] font-semibold text-muted-foreground uppercase"
+            >
+              {day.charAt(0)}
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 bg-background">
+          {calendarDays.map((dayObj, idx) => {
+            const isTodayDate = isToday(dayObj.date);
+            return (
+              <div
+                key={idx}
+                className={cn(
+                  "relative flex h-8 w-full items-center justify-center text-xs border-b border-r border-border/30",
+                  !dayObj.isCurrentMonth &&
+                    "bg-muted/10 text-muted-foreground/50",
+                  isTodayDate && "bg-primary/10 font-bold text-primary",
+                )}
+              >
+                {format(dayObj.date, "d")}
+                {isTodayDate && (
+                  <span className="absolute bottom-1 h-1 w-1 rounded-full bg-primary" />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+      {/* Today's events list */}
+      <div className="mt-4 space-y-2">
+        {todayEvents.length > 0 ? (
+          todayEvents.map((event) => (
+            <div key={event.id} className="flex items-center gap-2 text-sm">
+              <span className="h-2 w-2 rounded-full bg-primary" />
+              <span className="text-muted-foreground">{event.time}</span>
+              <span className="font-medium">{event.title}</span>
+            </div>
+          ))
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            Aucun événement aujourd'hui
           </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ---------- Dashboard Page ----------
+export function Index() {
+  return (
+    <DashboardLayout>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          Tableau de bord
+        </h1>
+        <p className="text-sm text-muted-foreground mt-1">
+          Bienvenue ! Voici un aperçu de votre activité récente.
+        </p>
+      </div>
+
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6 flex items-center gap-4">
+          <div className="p-3 rounded-lg bg-primary/10">
+            <Truck className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Livraisons récentes</p>
+            <p className="text-3xl font-bold text-foreground">
+              {MOCK_SUMMARY.recentDeliveries}
+            </p>
+            <p className="text-xs text-muted-foreground">Cette semaine</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6 flex items-center gap-4">
+          <div className="p-3 rounded-lg bg-amber-500/10">
+            <DollarSign className="h-6 w-6 text-amber-500" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Argent gagné</p>
+            <p className="text-3xl font-bold text-foreground">
+              {MOCK_SUMMARY.recentMoney}
+            </p>
+            <p className="text-xs text-muted-foreground">Cette semaine</p>
+          </div>
+        </div>
+        <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6 flex items-center gap-4">
+          <div className="p-3 rounded-lg bg-blue-500/10">
+            <Package className="h-6 w-6 text-blue-500" />
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground">Produits ajoutés</p>
+            <p className="text-3xl font-bold text-foreground">
+              {MOCK_SUMMARY.totalProducts}
+            </p>
+            <p className="text-xs text-muted-foreground">Cette semaine</p>
+          </div>
         </div>
       </div>
 
-      {/* Stat Cards Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard
-          title="Importations récentes"
-          value={String(recentImports.length)}
-          change="+3 cette semaine"
-          changeType="positive"
-          icon={Package}
-          delay={100}
-        />
-        <StatCard
-          title="Exportations récentes"
-          value={String(recentExports.length)}
-          change="-2 cette semaine"
-          changeType="negative"
-          icon={Truck}
-          delay={200}
-        />
-        <StatCard
-          title="Événements à venir"
-          value={String(upcomingEvents.length)}
-          change="Prochains 14 jours"
-          changeType="neutral"
-          icon={Calendar}
-          delay={300}
-        />
-        <StatCard
-          title="Mouvements de stock"
-          value={String(recentStockChanges.length)}
-          change="24h dernières"
-          changeType="neutral"
-          icon={ArrowUpDown}
-          delay={400}
-        />
+      {/* Recent Deliveries and Upcoming Sales */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        {/* Recent Deliveries Table */}
+        <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-4">
+            <Truck className="h-5 w-5 text-muted-foreground" /> Livraisons
+            récentes
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border/50">
+                  <th className="text-left py-2 px-2 font-medium text-muted-foreground">
+                    Commande
+                  </th>
+                  <th className="text-left py-2 px-2 font-medium text-muted-foreground">
+                    Client
+                  </th>
+                  <th className="text-left py-2 px-2 font-medium text-muted-foreground">
+                    Date
+                  </th>
+                  <th className="text-right py-2 px-2 font-medium text-muted-foreground">
+                    Statut
+                  </th>
+                  <th className="text-right py-2 px-2 font-medium text-muted-foreground">
+                    Montant
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {RECENT_DELIVERIES.map((delivery) => (
+                  <tr
+                    key={delivery.id}
+                    className="border-b border-border/30 hover:bg-muted/20"
+                  >
+                    <td className="py-2.5 px-2 font-medium text-foreground">
+                      {delivery.id}
+                    </td>
+                    <td className="py-2.5 px-2">{delivery.customer}</td>
+                    <td className="py-2.5 px-2 text-muted-foreground">
+                      {delivery.date}
+                    </td>
+                    <td className="py-2.5 px-2 text-right">
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          delivery.status === "Livré"
+                            ? "bg-emerald-500/10 text-emerald-600"
+                            : delivery.status === "En cours"
+                              ? "bg-amber-500/10 text-amber-600"
+                              : "bg-red-500/10 text-red-600"
+                        }`}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            delivery.status === "Livré"
+                              ? "bg-emerald-500"
+                              : delivery.status === "En cours"
+                                ? "bg-amber-500"
+                                : "bg-red-500"
+                          }`}
+                        />
+                        {delivery.status}
+                      </span>
+                    </td>
+                    <td className="py-2.5 px-2 text-right font-medium">
+                      {delivery.amount}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Upcoming Sales Table */}
+        <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-4">
+            <ShoppingCart className="h-5 w-5 text-muted-foreground" /> Ventes à
+            venir
+          </h2>
+          {UPCOMING_SALES.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left py-2 px-2 font-medium text-muted-foreground">
+                      Offre
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-muted-foreground">
+                      Réduction
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-muted-foreground">
+                      Début
+                    </th>
+                    <th className="text-right py-2 px-2 font-medium text-muted-foreground">
+                      Fin
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {UPCOMING_SALES.map((sale, idx) => (
+                    <tr
+                      key={idx}
+                      className="border-b border-border/30 hover:bg-muted/20"
+                    >
+                      <td className="py-2.5 px-2 font-medium text-foreground">
+                        {sale.name}
+                      </td>
+                      <td className="py-2.5 px-2 text-right">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
+                          {sale.discount}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-2 text-right text-muted-foreground">
+                        {sale.start}
+                      </td>
+                      <td className="py-2.5 px-2 text-right text-muted-foreground">
+                        {sale.end}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground py-8 text-center">
+              Aucune vente à venir.
+            </p>
+          )}
+        </div>
       </div>
 
-      {/* Main Highlights Grid – larger cards */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-        {/* Upcoming Events (wider) */}
-        <Card className="col-span-1 md:col-span-2 xl:col-span-2 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              Événements à venir
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">
-              {upcomingEvents.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <ScrollArea className="h-[400px] pr-4">
-              <div className="space-y-3">
-                {upcomingEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
-                  >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                      {getEventIcon(event.type)}
-                    </div>
-                    <div className="flex-1 space-y-1">
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium">{event.title}</p>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(event.date)}
-                        </span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        {event.description}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* Recent Imports with tabs */}
-        <Card className="col-span-1 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-0">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Package className="h-4 w-4 text-muted-foreground" />
-              Importations récentes
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">
-              {recentImports.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <Tabs defaultValue="confirmed" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-2">
-                <TabsTrigger value="confirmed" className="text-xs">
-                  Confirmées
-                </TabsTrigger>
-                <TabsTrigger value="unconfirmed" className="text-xs">
-                  Non confirmées
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="confirmed" className="mt-0">
-                <ScrollArea className="h-[360px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">N°</TableHead>
-                        <TableHead className="text-xs">Date</TableHead>
-                        <TableHead className="text-xs">Fournisseur</TableHead>
-                        <TableHead className="text-xs text-right">
-                          Art.
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentImports
-                        .filter((imp) => imp.confirmed)
-                        .map((imp) => (
-                          <TableRow key={imp.id}>
-                            <TableCell className="text-xs font-medium">
-                              #{imp.id}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {formatDate(imp.date)}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {imp.supplier}
-                            </TableCell>
-                            <TableCell className="text-xs text-right">
-                              {imp.items}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </TabsContent>
-              <TabsContent value="unconfirmed" className="mt-0">
-                <ScrollArea className="h-[360px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">N°</TableHead>
-                        <TableHead className="text-xs">Date</TableHead>
-                        <TableHead className="text-xs">Fournisseur</TableHead>
-                        <TableHead className="text-xs text-right">
-                          Art.
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentImports
-                        .filter((imp) => !imp.confirmed)
-                        .map((imp) => (
-                          <TableRow key={imp.id}>
-                            <TableCell className="text-xs font-medium">
-                              #{imp.id}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {formatDate(imp.date)}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {imp.supplier}
-                            </TableCell>
-                            <TableCell className="text-xs text-right">
-                              {imp.items}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Recent Exports with tabs */}
-        <Card className="col-span-1 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-0">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Truck className="h-4 w-4 text-muted-foreground" />
-              Exportations récentes
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">
-              {recentExports.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <Tabs defaultValue="confirmed" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-2">
-                <TabsTrigger value="confirmed" className="text-xs">
-                  Confirmées
-                </TabsTrigger>
-                <TabsTrigger value="unconfirmed" className="text-xs">
-                  Non confirmées
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="confirmed" className="mt-0">
-                <ScrollArea className="h-[360px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">N°</TableHead>
-                        <TableHead className="text-xs">Date</TableHead>
-                        <TableHead className="text-xs">Destination</TableHead>
-                        <TableHead className="text-xs text-right">
-                          Art.
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentExports
-                        .filter((exp) => exp.confirmed)
-                        .map((exp) => (
-                          <TableRow key={exp.id}>
-                            <TableCell className="text-xs font-medium">
-                              #{exp.id}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {formatDate(exp.date)}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {exp.destination}
-                            </TableCell>
-                            <TableCell className="text-xs text-right">
-                              {exp.items}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </TabsContent>
-              <TabsContent value="unconfirmed" className="mt-0">
-                <ScrollArea className="h-[360px]">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">N°</TableHead>
-                        <TableHead className="text-xs">Date</TableHead>
-                        <TableHead className="text-xs">Destination</TableHead>
-                        <TableHead className="text-xs text-right">
-                          Art.
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {recentExports
-                        .filter((exp) => !exp.confirmed)
-                        .map((exp) => (
-                          <TableRow key={exp.id}>
-                            <TableCell className="text-xs font-medium">
-                              #{exp.id}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {formatDate(exp.date)}
-                            </TableCell>
-                            <TableCell className="text-xs">
-                              {exp.destination}
-                            </TableCell>
-                            <TableCell className="text-xs text-right">
-                              {exp.items}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                    </TableBody>
-                  </Table>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Stock Changes (now wider) */}
-        <Card className="col-span-1 md:col-span-2 xl:col-span-2 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
-              Changements de stock récents
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">
-              {recentStockChanges.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <ScrollArea className="h-[400px] pr-2">
-              <div className="space-y-3">
-                {recentStockChanges.map((change, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
-                  >
-                    <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                        change.change > 0
-                          ? "bg-emerald-100 text-emerald-600"
-                          : "bg-red-100 text-red-600"
-                      }`}
-                    >
-                      {change.change > 0 ? (
-                        <ArrowUpRight className="h-4 w-4" />
-                      ) : (
-                        <ArrowDownRight className="h-4 w-4" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">
-                        {change.product}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {change.previousQty} → {change.newQty}{" "}
-                        <span
-                          className={
-                            change.change > 0
-                              ? "text-emerald-600 font-medium"
-                              : "text-red-600 font-medium"
-                          }
-                        >
-                          ({change.change > 0 ? "+" : ""}
-                          {change.change})
-                        </span>
-                      </p>
-                      <p className="text-xs text-muted-foreground/70 truncate">
-                        {change.reason}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-
-        {/* New: Recent Account Activities */}
-        <Card className="col-span-1 md:col-span-2 xl:col-span-2 shadow-sm">
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <User className="h-4 w-4 text-muted-foreground" />
-              Activités des comptes récentes
-            </CardTitle>
-            <Badge variant="secondary" className="text-xs">
-              {recentAccountActivities.length}
-            </Badge>
-          </CardHeader>
-          <CardContent className="px-2 pb-2">
-            <ScrollArea className="h-[400px] pr-2">
-              <div className="space-y-3">
-                {recentAccountActivities.map((activity) => {
-                  const IconComp = activity.icon;
-                  return (
-                    <div
-                      key={activity.id}
-                      className="flex items-start gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
-                    >
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                        <IconComp className={`h-4 w-4 ${activity.color}`} />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium">
-                            {activity.action}
-                          </p>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {activity.timestamp}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          {activity.user}
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+      {/* Deliveries Trend Chart and Calendar */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 rounded-2xl border border-border/50 bg-gradient-to-br from-card to-card/80 shadow-lg shadow-primary/5 p-6">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2 mb-4">
+            <TrendingUp className="h-5 w-5 text-muted-foreground" /> Évolution
+            des livraisons (7 jours)
+          </h2>
+          <DeliveriesLineChart
+            data={DELIVERY_TREND.counts}
+            days={DELIVERY_TREND.days}
+          />
+        </div>
+        <div>
+          <MiniCalendar />
+        </div>
       </div>
     </DashboardLayout>
   );
-};
+}

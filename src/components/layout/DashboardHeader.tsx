@@ -73,7 +73,7 @@ export function DashboardHeader() {
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <Input
               type="search"
-              placeholder="Recherchez comptes, fournisseurs, fabricants, chantiers, etc..."
+              placeholder="Recherchez produits, clients, livreurs..."
               className="w-full bg-secondary/50 pl-10 pr-8 border-border focus:border-primary focus:ring-primary transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

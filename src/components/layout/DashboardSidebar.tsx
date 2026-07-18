@@ -54,10 +54,8 @@ const navigationItems = [
       { title: "Commandes annulées", icon: XCircle, url: "/orders/canceled" },
     ],
   },
-  { title: "Gestion finances", url: "/finances", icon: Wallet },
   { title: "Calendrier globale", url: "/calendar", icon: Calendar },
   { title: "Notifications", url: "/notifications", icon: Bell },
-  { title: "Paramètres magasin", url: "/settings", icon: Settings },
 ];
 
 export function DashboardSidebar() {

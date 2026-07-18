@@ -19,7 +19,7 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 25% 10%;
 
-    --primary: 150 80% 38%;
+    --primary: 217 80% 45%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 15% 94%;
@@ -28,7 +28,7 @@ All colors MUST be HSL.
     --muted: 220 15% 92%;
     --muted-foreground: 220 10% 45%;
 
-    --accent: 145 75% 38%;
+    --accent: 210 75% 45%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -36,18 +36,18 @@ All colors MUST be HSL.
 
     --border: 220 15% 88%;
     --input: 220 15% 88%;
-    --ring: 150 80% 38%;
+    --ring: 217 80% 45%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 220 10% 45%;
-    --sidebar-primary: 150 80% 38%;
+    --sidebar-primary: 217 80% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 15% 94%;
     --sidebar-accent-foreground: 220 25% 10%;
     --sidebar-border: 220 15% 90%;
-    --sidebar-ring: 150 80% 38%;
+    --sidebar-ring: 217 80% 45%;
 
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
@@ -55,9 +55,9 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 220 25% 7%;
 
-    --gradient-green: linear-gradient(135deg, hsl(150 80% 38%) 0%, hsl(145 85% 45%) 100%);
+    --gradient-blue: linear-gradient(135deg, hsl(217 80% 45%) 0%, hsl(210 85% 55%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%) 0%, hsl(220 15% 98%) 100%);
-    --shadow-glow: 0 0 30px -5px hsl(150 80% 42% / 0.2);
+    --shadow-glow: 0 0 30px -5px hsl(217 80% 45% / 0.2);
     --shadow-card: 0 10px 40px -10px hsl(220 30% 50% / 0.1);
   }
 
@@ -71,7 +71,7 @@ All colors MUST be HSL.
     --popover: 220 25% 12%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 150 80% 42%;
+    --primary: 217 80% 52%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 220 20% 16%;
@@ -80,7 +80,7 @@ All colors MUST be HSL.
     --muted: 220 20% 14%;
     --muted-foreground: 215 20% 55%;
 
-    --accent: 145 75% 40%;
+    --accent: 210 75% 52%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 72% 51%;
@@ -88,16 +88,16 @@ All colors MUST be HSL.
 
     --border: 220 20% 18%;
     --input: 220 20% 18%;
-    --ring: 150 80% 42%;
+    --ring: 217 80% 52%;
 
     --sidebar-background: 220 25% 9%;
     --sidebar-foreground: 215 20% 65%;
-    --sidebar-primary: 150 80% 42%;
+    --sidebar-primary: 217 80% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 220 20% 14%;
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 220 20% 15%;
-    --sidebar-ring: 150 80% 42%;
+    --sidebar-ring: 217 80% 52%;
 
     --success: 142 76% 36%;
     --success-foreground: 210 40% 98%;
@@ -105,9 +105,9 @@ All colors MUST be HSL.
     --warning: 38 92% 50%;
     --warning-foreground: 220 25% 7%;
 
-    --gradient-green: linear-gradient(135deg, hsl(150 80% 42%) 0%, hsl(145 85% 50%) 100%);
+    --gradient-blue: linear-gradient(135deg, hsl(217 80% 52%) 0%, hsl(210 85% 60%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(220 25% 12%) 0%, hsl(220 25% 8%) 100%);
-    --shadow-glow: 0 0 30px -5px hsl(150 80% 42% / 0.15);
+    --shadow-glow: 0 0 30px -5px hsl(217 80% 52% / 0.15);
     --shadow-card: 0 10px 40px -10px hsl(220 50% 3% / 0.5);
   }
 
@@ -125,7 +125,7 @@ All colors MUST be HSL.
   }
 }
 
-/* Custom Green Scrollbar - WebKit browsers (Chrome, Safari, Edge) */
+/* Custom Blue Scrollbar - WebKit browsers (Chrome, Safari, Edge) */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -139,8 +139,8 @@ All colors MUST be HSL.
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    hsl(150 80% 42%) 0%,
-    hsl(145 80% 32%) 100%
+    hsl(217 80% 52%) 0%,
+    hsl(210 75% 42%) 100%
   );
   border-radius: var(--radius);
   border: 2px solid hsl(var(--muted));
@@ -149,8 +149,8 @@ All colors MUST be HSL.
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
-    hsl(150 80% 52%) 0%,
-    hsl(145 80% 42%) 100%
+    hsl(217 80% 60%) 0%,
+    hsl(210 75% 50%) 100%
   );
 }
 
@@ -158,10 +158,10 @@ All colors MUST be HSL.
   background: hsl(var(--muted));
 }
 
-/* Custom Green Scrollbar - Firefox */
+/* Custom Blue Scrollbar - Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: hsl(150 80% 42%) hsl(var(--muted));
+  scrollbar-color: hsl(217 80% 52%) hsl(var(--muted));
 }
 
 /* Dark mode scrollbar adjustments */

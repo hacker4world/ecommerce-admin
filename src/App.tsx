@@ -21,6 +21,12 @@ import { CreateWorker } from "./pages/CreateDeliveryWorker";
 import { WorkerAnalytics } from "./pages/WorkerDetails";
 import { GlobalCalendar } from "./pages/Calendar";
 import { Notifications } from "./pages/Notifications";
+import { PendingOrders } from "./pages/PendingOrders";
+import { OrderDetails } from "./pages/PendingOrderDetails";
+import { DeliveredOrders } from "./pages/DeliveredOrders";
+import { DeliveredOrderDetails } from "./pages/DeliveredOrderDetails";
+import { CanceledOrders } from "./pages/CanceledOrders";
+import { CanceledOrderDetails } from "./pages/CanceledOrderDetails";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +55,15 @@ const App = () => (
             <Route path="/livreurs/details" element={<WorkerAnalytics />} />
             <Route path="/calendar" element={<GlobalCalendar />} />
             <Route path="/notifications" element={<Notifications />} />
+            <Route path="/orders/pending" element={<PendingOrders />} />
+            <Route path="/orders/pending/details" element={<OrderDetails />} />
+            <Route path="/orders/confirmed" element={<DeliveredOrders />} />
+            <Route
+              path="/orders/delivered/details"
+              element={<DeliveredOrderDetails />}
+            />
+            <Route path="/orders/canceled" element={<CanceledOrders />} />
+            <Route path="/orders/canceled/details" element={<CanceledOrderDetails />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
