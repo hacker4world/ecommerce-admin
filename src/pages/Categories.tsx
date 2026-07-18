@@ -356,7 +356,7 @@ export function Categories() {
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                        onClick={() => navigate(`/categories/${cat.id}`)}
+                        onClick={() => navigate(`/categories/details`)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -457,7 +457,7 @@ export function Categories() {
                     variant="outline"
                     size="sm"
                     className="flex-1 gap-1.5 rounded-lg"
-                    onClick={() => navigate(`/categories/${cat.id}`)}
+                    onClick={() => navigate(`/categories/details`)}
                   >
                     <Pencil className="h-3.5 w-3.5" />
                     Modifier
